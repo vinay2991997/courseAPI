@@ -1,7 +1,7 @@
 package io.vinay.springBootStarter.topic;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,13 +9,35 @@ import java.util.List;
 @RestController
 public class TopicController {
 
-    @RequestMapping("topics")
+    @Autowired
+    private TopicService topicService;
+
+    @RequestMapping("/topics")
     public List<Topic> getAllTopics() {
-        return Arrays.asList(
-                new Topic("B01", "Book1", "This is book 1"),
-                new Topic("B02", "Book2", "This is book 2"),
-                new Topic("B03", "Book3", "This is book 3")
-        );
+        return topicService.getAllTopics();
     }
 
+    @RequestMapping("/topics/{id}")
+    public Topic getById(@PathVariable String id) {
+        return topicService.getById(id);
+    }
+
+    @RequestMapping(method = RequestMethod.POST , value = "/topics")
+    public void addTopic(@RequestBody Topic topic) {
+
+        if (!topicService.hasTopic(topic))
+            topicService.addTopic(topic);
+        else
+            System.out.println("This item already exist in the current list!!");
+    }
+
+    @RequestMapping(method = RequestMethod.PUT , value = "/topics/{id}")
+    public void updatetopic(@PathVariable String id, @RequestBody Topic topic) {
+        topicService.updateTopic(id,topic);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE , value = "/topics/{id}")
+    public void delete(@PathVariable String id){
+        topicService.deleteById(id);
+    }
 }
